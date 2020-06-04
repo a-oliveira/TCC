@@ -1,6 +1,8 @@
 from rdflib import Graph, URIRef
 from urllib.parse import urlparse
 import urllib.request
+import pandas as pd
+from pandas import ExcelFile
 
 PATH = "C:/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/Imagens/"
     
