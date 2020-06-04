@@ -44,11 +44,26 @@ def recuperarDados():
                 baixarImagens(valor, PATH+id+".jpg", id)
         #print('------------ X -----------\n')
         
-        
+def imprimirDadosxlsx():
+    arq_excel = "myosotis_database.xlsx"
+    
+    df = pd.read_excel(arq_excel)
+    colunas = df.columns
+    
+    linha = len(df['id'])
+    
+    #baixarImagens("http://portal.mj.gov.br/Desaparecidos/Fotos//1236Foto2", PATH+'840.jpeg', 840)
+    
+    for c1 in range(linha):
+        id = str(df['id'][c1])
+        img = str(df['imagem'][c1])
+        baixarImagens(img+".jpg", PATH+id+".jpg", id)
+        #print(id, img)        
         
 def main():
     
     recuperarDados()
+    imprimirDadosxlsx()
     
 if __name__ == '__main__':
     main()
