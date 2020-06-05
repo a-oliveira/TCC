@@ -1,17 +1,23 @@
 from rdflib import Graph, URIRef
 from urllib.parse import urlparse
 import urllib.request
+import urllib.error
 import pandas as pd
-from pandas import ExcelFile
 
-PATH = "C:/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/Imagens/"
+PATH = "C:/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/ImagensMyosotis/"
+#PATH = "C:/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/Imagens UFJF/"
     
 def baixarImagens(url, nomeImg, id):
     
     try:
         urllib.request.urlretrieve(url, nomeImg)
-    except:
+    except urllib.error.ContentTooShortError as e:
         print("Erro ao salvar a imagem do desaparecido id: ", id)
+        print("URL Erro:", e.reason)
+    except urllib.error.HTTPError as e:
+        print("Erro ao salvar a imagem do desaparecido id: ", id)
+        print("HTTP ERRO", e.code, ":", e.reason)
+        
         
 def extrairInfo(url):
     
@@ -45,27 +51,29 @@ def recuperarDados():
             if(label == "img"):
                 baixarImagens(valor, PATH+id+".jpg", id)
         #print('------------ X -----------\n')
+                
+def recuperarDadosxlsx():
+    
+    arq_excel = "myosotis_database.xlsx" 
+    df        = pd.read_excel(arq_excel)
+    colunas   = df.columns
+    linhas    = len(df['id'])
+    
+    
+    for linha in range(linhas):
+        id  = str(df['id'][linha])
+        img = str(df['imagem'][linha])
+        if img == 'nan':
+            continue
+        baixarImagens(img, PATH+id+".jpg", id)
+        #print(id, img)      
         
-def imprimirDadosxlsx():
-    arq_excel = "myosotis_database.xlsx"
-    
-    df = pd.read_excel(arq_excel)
-    colunas = df.columns
-    
-    linha = len(df['id'])
-    
-    #baixarImagens("http://portal.mj.gov.br/Desaparecidos/Fotos//1236Foto2", PATH+'840.jpeg', 840)
-    
-    for c1 in range(linha):
-        id = str(df['id'][c1])
-        img = str(df['imagem'][c1])
-        baixarImagens(img+".jpg", PATH+id+".jpg", id)
-        #print(id, img)        
+        
         
 def main():
     
-    recuperarDados()
-    imprimirDadosxlsx()
+    #recuperarDados()
+    recuperarDadosxlsx()
     
 if __name__ == '__main__':
     main()
