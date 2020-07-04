@@ -10,14 +10,32 @@ PATH = "C:/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/ImagensMyosotis/"
 def baixarImagens(url, nomeImg, id):
     
     try:
-        urllib.request.urlretrieve(url, nomeImg)
-    except urllib.error.ContentTooShortError as e:
-        print("Erro ao salvar a imagem do desaparecido id: ", id)
-        print("URL Erro:", e.reason)
-    except urllib.error.HTTPError as e:
-        print("Erro ao salvar a imagem do desaparecido id: ", id)
-        print("HTTP ERRO", e.code, ":", e.reason)
         
+        # verifica se há alguma url corrompida
+        if("http" not in url):
+            url = "http:/"+url
+            
+        connection = requests.get(url)
+        connection.raise_for_status()
+        img_data  = connection.content
+        with open(nomeImg, 'wb') as handler:
+            handler.write(img_data)
+            
+    except HTTPError as e:
+        print("Erro ao salvar a imagem do desaparecido id: ", id)
+        print("ERRO:", e.response.status_code, e.response.reason)
+    except ConnectionError as e:
+        print("Erro ao salvar a imagem do desaparecido id: ", id)
+        print("Falha ao estabelecer a conexão.")
+    except Timeout as e:
+        print("Erro ao salvar a imagem do desaparecido id: ", id)
+        print("ERRO:", e)
+    except ConnectTimeout as e:
+        print("Erro ao salvar a imagem do desaparecido id: ", id)
+        print("ERRO:", e)
+    except ReadTimeout as e:
+        print("Erro ao salvar a imagem do desaparecido id: ", id)
+        print("ERRO:", e)
         
 def extrairInfo(url):
     
@@ -49,14 +67,15 @@ def recuperarDados():
             #print("O ID é: ", id, "\n")
             #print(label, ": ", valor)
             if(label == "img"):
-                baixarImagens(valor, PATH+id+".jpg", id)
+                arquivo = PATH+id+".jpg"
+                if not os.path.exists(arquivo):
+                    baixarImagens(valor, arquivo, id)
         #print('------------ X -----------\n')
                 
 def recuperarDadosxlsx():
     
     arq_excel = "myosotis_database.xlsx" 
     df        = pd.read_excel(arq_excel)
-    colunas   = df.columns
     linhas    = len(df['id'])
     
     
@@ -65,7 +84,9 @@ def recuperarDadosxlsx():
         img = str(df['imagem'][linha])
         if img == 'nan':
             continue
-        baixarImagens(img, PATH+id+".jpg", id)
+        arquivo = PATH+id+".jpg"
+        if not os.path.exists(arquivo):
+            baixarImagens(img, arquivo, id) 
         #print(id, img)      
         
         
