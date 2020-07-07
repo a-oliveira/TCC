@@ -1,12 +1,20 @@
 from rdflib import Graph, URIRef
 from urllib.parse import urlparse
-import urllib.request
+import urllib.request 
+import requests
 import urllib.error
 import pandas as pd
+from requests import HTTPError, Timeout, ConnectionError, ConnectTimeout, ReadTimeout
+import os.path
+#from requests import ReadTimeout, ConnectTimeout, InvalidURL
+#from pandas import read_excel
+#from openpyxl import load_workbook
 
-PATH = "C:/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/ImagensMyosotis/"
-#PATH = "C:/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/Imagens UFJF/"
-    
+#caminho para extracao da base de dados xls
+PATH = "/home/samara/Documentos/tcc/imagensBD1/"
+#caminho para extracao da base de dados rdfm
+PATH1 = '/home/samara/Documentos/tcc/imagensBD2/'
+
 def baixarImagens(url, nomeImg, id):
     
     try:
@@ -17,10 +25,9 @@ def baixarImagens(url, nomeImg, id):
             
         connection = requests.get(url)
         connection.raise_for_status()
-        img_data  = connection.content
+        img_data = requests.get(url).content
         with open(nomeImg, 'wb') as handler:
             handler.write(img_data)
-            
     except HTTPError as e:
         print("Erro ao salvar a imagem do desaparecido id: ", id)
         print("ERRO:", e.response.status_code, e.response.reason)
@@ -36,7 +43,19 @@ def baixarImagens(url, nomeImg, id):
     except ReadTimeout as e:
         print("Erro ao salvar a imagem do desaparecido id: ", id)
         print("ERRO:", e)
-        
+
+def criarDiretorio(img, caminho, id):
+    #arquivo = PATH+id+".jpg"
+    arquivo = caminho+id+".jpg"
+    
+    if not os.path.exists(caminho):
+        os.makedirs(caminho)
+        if not os.path.exists(arquivo):
+            baixarImagens(img, arquivo, id)
+    else:
+        if not os.path.exists(arquivo):
+            baixarImagens(img, arquivo, id)    
+    
 def extrairInfo(url):
     
     # separa as partes da url
@@ -67,9 +86,10 @@ def recuperarDados():
             #print("O ID é: ", id, "\n")
             #print(label, ": ", valor)
             if(label == "img"):
-                arquivo = PATH+id+".jpg"
-                if not os.path.exists(arquivo):
-                    baixarImagens(valor, arquivo, id)
+                #arquivo = PATH+id+".jpg"
+                criarDiretorio(valor, PATH1, id)
+                #if not os.path.exists(arquivo):
+                 #   baixarImagens(valor, arquivo, id)
         #print('------------ X -----------\n')
                 
 def recuperarDadosxlsx():
@@ -78,23 +98,23 @@ def recuperarDadosxlsx():
     df        = pd.read_excel(arq_excel)
     linhas    = len(df['id'])
     
-    
     for linha in range(linhas):
         id  = str(df['id'][linha])
         img = str(df['imagem'][linha])
-        if img == 'nan':
-            continue
-        arquivo = PATH+id+".jpg"
-        if not os.path.exists(arquivo):
-            baixarImagens(img, arquivo, id) 
-        #print(id, img)      
-        
-        
+        #txt = img
+        #conf = "http:"
+
+        if img == 'nan' or "http:" not in img:
+            continue   
+        criarDiretorio(img, PATH, id)
+        #if not os.path.exists(arquivo):
+        #   baixarImagens(img, arquivo, id)       
+        #print(id, img)
         
 def main():
     
-    #recuperarDados()
-    recuperarDadosxlsx()
+    recuperarDados()
+    #recuperarDadosxlsx()
     
 if __name__ == '__main__':
     main()
