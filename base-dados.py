@@ -1,24 +1,61 @@
 from rdflib import Graph, URIRef
 from urllib.parse import urlparse
-import urllib.request
+import urllib.request 
+import requests
 import urllib.error
 import pandas as pd
+from requests import HTTPError, Timeout, ConnectionError, ConnectTimeout, ReadTimeout
+import os.path
+#from requests import ReadTimeout, ConnectTimeout, InvalidURL
+#from pandas import read_excel
+#from openpyxl import load_workbook
 
-PATH = "C:/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/ImagensMyosotis/"
-#PATH = "C:/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/Imagens UFJF/"
-    
+#caminho para extracao da base de dados xls
+PATH = "/home/samara/Documentos/tcc/imagensBD1/"
+#caminho para extracao da base de dados rdfm
+PATH1 = '/home/samara/Documentos/tcc/imagensBD2/'
+
 def baixarImagens(url, nomeImg, id):
     
     try:
-        urllib.request.urlretrieve(url, nomeImg)
-    except urllib.error.ContentTooShortError as e:
-        print("Erro ao salvar a imagem do desaparecido id: ", id)
-        print("URL Erro:", e.reason)
-    except urllib.error.HTTPError as e:
-        print("Erro ao salvar a imagem do desaparecido id: ", id)
-        print("HTTP ERRO", e.code, ":", e.reason)
         
-        
+        # verifica se há alguma url corrompida
+        if("http" not in url):
+            url = "http:/"+url
+            
+        connection = requests.get(url)
+        connection.raise_for_status()
+        img_data = requests.get(url).content
+        with open(nomeImg, 'wb') as handler:
+            handler.write(img_data)
+    except HTTPError as e:
+        print("Erro ao salvar a imagem do desaparecido id: ", id)
+        print("ERRO:", e.response.status_code, e.response.reason)
+    except ConnectionError as e:
+        print("Erro ao salvar a imagem do desaparecido id: ", id)
+        print("Falha ao estabelecer a conexão.")
+    except Timeout as e:
+        print("Erro ao salvar a imagem do desaparecido id: ", id)
+        print("ERRO:", e)
+    except ConnectTimeout as e:
+        print("Erro ao salvar a imagem do desaparecido id: ", id)
+        print("ERRO:", e)
+    except ReadTimeout as e:
+        print("Erro ao salvar a imagem do desaparecido id: ", id)
+        print("ERRO:", e)
+
+def criarDiretorio(img, caminho, id):
+    #arquivo = PATH+id+".jpg"
+    arquivo = caminho+id+".jpg"
+    
+    if not os.path.exists(caminho):
+        os.makedirs(caminho)
+        if not os.path.exists(arquivo):
+            baixarImagens(img, arquivo, id)
+    else:
+        if not os.path.exists(arquivo):
+            baixarImagens(img, arquivo, id)    
+    
 def extrairInfo(url):
     
     # separa as partes da url
@@ -49,31 +86,35 @@ def recuperarDados():
             #print("O ID é: ", id, "\n")
             #print(label, ": ", valor)
             if(label == "img"):
-                baixarImagens(valor, PATH+id+".jpg", id)
+                #arquivo = PATH+id+".jpg"
+                criarDiretorio(valor, PATH1, id)
+                #if not os.path.exists(arquivo):
+                 #   baixarImagens(valor, arquivo, id)
         #print('------------ X -----------\n')
                 
 def recuperarDadosxlsx():
     
     arq_excel = "myosotis_database.xlsx" 
     df        = pd.read_excel(arq_excel)
-    colunas   = df.columns
     linhas    = len(df['id'])
-    
     
     for linha in range(linhas):
         id  = str(df['id'][linha])
         img = str(df['imagem'][linha])
-        if img == 'nan':
-            continue
-        baixarImagens(img, PATH+id+".jpg", id)
-        #print(id, img)      
-        
-        
+        #txt = img
+        #conf = "http:"
+
+        if img == 'nan' or "http:" not in img:
+            continue   
+        criarDiretorio(img, PATH, id)
+        #if not os.path.exists(arquivo):
+        #   baixarImagens(img, arquivo, id)       
+        #print(id, img)
         
 def main():
     
-    #recuperarDados()
-    recuperarDadosxlsx()
+    recuperarDados()
+    #recuperarDadosxlsx()
     
 if __name__ == '__main__':
     main()
