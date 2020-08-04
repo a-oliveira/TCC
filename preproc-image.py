@@ -1,4 +1,5 @@
 import PIL 
+import csv
 import glob, os
 from numpy import *
 from PIL import Image
@@ -7,7 +8,7 @@ from resizeimage import resizeimage
 from keras.preprocessing.image import *
 
 BASE_MYOSOTIS = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/ImagensMyosotis/*.jpg'
-PASTA_BKP     = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/teste/'
+PATH          = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/rotulacao-bd.csv'
 LARGURA       = 80
 ALTURA        = 80
 
@@ -30,4 +31,13 @@ def imageToarray():
         listaImagens.append(pixels)
     return listaImagens
         
-lista = imageToarray()    
+def target():
+    
+    with open(PATH, newline='') as arquivo:
+        leitor = csv.reader(arquivo)
+        for linha in leitor:
+            print(linha[1:6])
+
+#lista = imageToarray()
+
+target()
