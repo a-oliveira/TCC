@@ -36,7 +36,7 @@ def target():
     with open(PATH, newline='') as arquivo:
         leitor = csv.reader(arquivo)
         for linha in leitor:
-            print(linha[1:6])
+            print(linha[:6])
 
 #lista = imageToarray()
 
