@@ -6,7 +6,9 @@ from PIL import Image
 from matplotlib import pyplot
 from resizeimage import resizeimage
 from keras.preprocessing.image import *
+import pandas as pd
 
+PATH = '/home/samara/Downloads/base_ufjf.csv'
 BASE_MYOSOTIS = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/ImagensMyosotis/*.jpg'
 PATH          = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/rotulacao-bd.csv'
 LARGURA       = 80
@@ -41,3 +43,16 @@ def target():
 #lista = imageToarray()
 
 target()
+
+
+
+def busca_csv(id_img):
+    with open(PATH, newline='') as arquivo:
+        df_data = pd.read_csv(arquivo)
+
+        #tornando a coluna id_imagem em indice
+        df_data.set_index('id_imagem', inplace=True)
+
+        print(df_data.loc[40])
+
+busca_csv(40)
