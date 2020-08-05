@@ -40,19 +40,10 @@ def target():
         for linha in leitor:
             print(linha[:6])
 
-#lista = imageToarray()
-
-target()
-
-
-
 def busca_csv(id_img):
-    with open(PATH, newline='') as arquivo:
-        df_data = pd.read_csv(arquivo)
+    df_data = pd.read_csv(PATH)
+    #tornando a coluna id_imagem em indice
+    df_data.set_index('id_imagem', inplace=True)
+    print(df_data.loc[id_img].values)
 
-        #tornando a coluna id_imagem em indice
-        df_data.set_index('id_imagem', inplace=True)
-
-        print(df_data.loc[40])
-
-busca_csv(40)
+busca_csv(47)
