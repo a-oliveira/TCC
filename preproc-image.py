@@ -47,12 +47,9 @@ target()
 
 
 def busca_csv(id_img):
-    with open(PATH, newline='') as arquivo:
-        df_data = pd.read_csv(arquivo)
-
-        #tornando a coluna id_imagem em indice
-        df_data.set_index('id_imagem', inplace=True)
-
-        print(df_data.loc[40])
+    df_data = pd.read_csv(arquivo)
+    #tornando a coluna id_imagem em indice
+    df_data.set_index('id_imagem', inplace=True)
+    print(df_data.loc[id_img])
 
 busca_csv(40)
