@@ -8,13 +8,21 @@ from resizeimage import resizeimage
 from keras.preprocessing.image import *
 import pandas as pd
 
-BASE_MYOSOTIS = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/ImagensMyosotis/*.jpg'
+BASE_UFJF     = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/ImagensUFJF/*.jpg'
+PATH_BKP      = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/ImagensTreino'
 PATH          = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/rotulacao-bd.csv'
+IMG_EXISTE    = False
+
 LARGURA       = 80
 ALTURA        = 80
 
 listaImagens = []
 listaY       = []
+
+'''
+#print(nome(i))
+#pyplot.imshow(pixels) - serve para printar a imagem em forma de gráfico
+'''
 
 def nome(diretorio):
     # pega apenas o id.jpg
@@ -24,25 +32,52 @@ def nome(diretorio):
     nome = nome.split(".jpg")
     return nome[0]
 
-def imageToarray():
+def criarDiretorio(id_img, imagem):
+    foto = PATH_BKP+"\\"+str(id_img)+".jpg"
     
-    for i in glob.glob(BASE_MYOSOTIS):
+    if not os.path.exists(PATH_BKP):
+        os.makedirs(PATH_BKP)
+        imagem.save(foto)
+    else:
+        if not os.path.exists(foto):
+            imagem.save(foto)
+            
+def busca_csv(id_img, objImg):
+    
+    df_data = pd.read_csv(PATH)
+    df_data.set_index('id_imagem', inplace=True) # tornando a coluna id_imagem em indice
+    
+    try:
+        caracteristicas = df_data.loc[id_img].values
+        criarDiretorio(id_img, objImg) # armazena a imagem encontrada no csv
+        IMG_EXISTE = True
+        return caracteristicas
+    except:
+        print("Imagem"+str(id_img)+" não encontrada.\n")
+    
+    return False
+            
+def load_data():
+    
+    x = [] # lista das imagens
+    y = [] # lista de atributos das imagens (corCabelo, corOlhos...)
+    
+    for i in glob.glob(BASE_UFJF):
         img    = Image.open(i)
         img    = img.resize((LARGURA, ALTURA), PIL.Image.ANTIALIAS)
-        pixels = asarray(img).astype('float32')
-        pixels = pixels/pixels.max()
-        # transforma id da imagem em inteiro antes de passar pra busca
-        busca_csv(int(nome(i)))
-        #print(nome(i))
-        #pyplot.imshow(pixels)
-        listaImagens.append(pixels)
-    return listaImagens
-
-def busca_csv(id_img):
-    df_data = pd.read_csv(PATH)
-    #tornando a coluna id_imagem em indice
-    df_data.set_index('id_imagem', inplace=True)
-    print(df_data.loc[id_img].values)
+        i      = int(nome(i)) # transforma id da imagem em inteiro antes de passar pra busca
+        caracteristicas = busca_csv(i, img)
+        
+        if(IMG_EXISTE):
+            pixels = asarray(img).astype('float32') #transforma a imagem em um array de pixels
+            pixels = pixels/pixels.max()
+            x.append(pixels)
+            y.append(caracteristicas)
+        else:
+            continue
+        
+    return x,y
     
-busca_csv(47)
-#lista = imageToarray()
+x,y = load_data()
+
+print(x)
