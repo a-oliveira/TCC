@@ -2,8 +2,8 @@
 
 1. Instalar o Anaconda
 
-[Anaconda para Windows 64-bit](https://repo.anaconda.com/archive/Anaconda3-2020.07-Windows-x86_64.exe)
-[Anaconda para Linux](https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh)
+- [Anaconda para Windows 64-bit](https://repo.anaconda.com/archive/Anaconda3-2020.07-Windows-x86_64.exe)
+- [Anaconda para Linux](https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh)
 
 2. Após a instalação, execute no Anaconda Prompt:
 
