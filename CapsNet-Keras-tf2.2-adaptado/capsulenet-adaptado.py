@@ -26,6 +26,13 @@ from utils import combine_images
 from PIL import Image
 from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
 
+from preproc import *
+from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
+
+CONJ_TREINO = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/CapsNet-Keras-tf2.2/CONJ_TREINO/*.jpg'
+CONJ_TESTE = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/CapsNet-Keras-tf2.2/CONJ_TESTE/*.jpg'
+
+
 K.set_image_data_format('channels_last')
 
 
@@ -222,6 +229,7 @@ if __name__ == "__main__":
 
     # setting the hyper parameters
     dataset_name = 'CIFAR-10' #'MNIST'
+    dataset_name = 'MYOSOTIS' #'CIFAR-10' #'MNIST'
 
     parser = argparse.ArgumentParser(description="Capsule Network on {}.".format(dataset_name))
     parser.add_argument('--epochs', default=5, type=int)
@@ -254,17 +262,26 @@ if __name__ == "__main__":
     # load data
     (x_train, y_train) = (None, None) 
     (x_test, y_test) = (None, None)
-    
+
     if dataset_name == 'MNIST':
         (x_train, y_train), (x_test, y_test) = load_mnist()
     elif dataset_name == 'CIFAR-10':
         (x_train, y_train), (x_test, y_test) = load_cifar()
+
     elif dataset_name == 'myosotis':
         x_train, y_train = utils.load_data()
 
     # define model
     model, eval_model, manipulate_model = CapsNet(input_shape=x_train.shape[1:],
                                                   n_class=len(np.unique(np.argmax(y_train, 1))),
+
+    elif dataset_name == 'MYOSOTIS':
+        x_train, y_train = load_data(CONJ_TREINO)
+        x_test, y_test = load_data(CONJ_TESTE)
+
+    # define model
+    model, eval_model, manipulate_model = CapsNet(input_shape=(30,30,3),#x_train.shape[1:],
+                                                  n_class=5,
                                                   routings=args.routings,
                                                   batch_size=args.batch_size)
     model.summary()
