@@ -28,8 +28,8 @@ from utils import combine_images
 from load_data import *
 from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
 
-CONJ_TREINO = '/home/samara/Documentos/tcc/CONJ_TREINO/*.jpg'
-CONJ_TESTE = '/home/samara/Documentos/tcc/CONJ_TESTE/*.jpg'
+CONJ_TREINO = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/CapsNet-Keras-tf2.2/CONJ_TREINO/*.jpg'
+CONJ_TESTE = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/CapsNet-Keras-tf2.2/CONJ_TESTE/*.jpg'
 
 K.set_image_data_format('channels_last')
 

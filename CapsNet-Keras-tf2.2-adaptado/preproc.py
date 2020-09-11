@@ -1,13 +1,15 @@
 import csv
-import cv2
-import os
-from faces import *
+#import cv2
+import glob, os
+#from faces import *
+import numpy as np
+import pandas as pd
+from PIL import Image
 
-CSV_UFJF    = 'UFJF2.csv'
-IMGS_UFJF   = '/home/samara/Documentos/tcc/ImagensUFJF/'
-CONJ_TREINO = '/home/samara/Documentos/tcc/CONJ_TREINO/'
+CSV_UFJF    = 'UFJF.csv'
+IMGS_UFJF   = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/ImagensUFJF/'
+CONJ_TREINO = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/CapsNet-Keras-tf2.2/CONJ_TREINO/*.jpg'
 
-'''
 def nome(diretorio):
 
     nome = diretorio.split("\\") # pega apenas o 'id.jpg'
@@ -24,13 +26,13 @@ def nome(diretorio):
     nome = nome.split(".jpg")  # segundo split para pegar apenas o id
     
     return nome[0]
-
+'''
                
 def salvaImagem():
     imagem = None
     with open(CSV_UFJF, 'r') as rotulacao:
         leitor = csv.DictReader(rotulacao, delimiter=',')
-
+        
         for coluna in leitor:
             caminhoFoto = IMGS_UFJF+str(coluna['id_imagem'])+".jpg"
             if os.path.exists(IMGS_UFJF):
@@ -43,5 +45,4 @@ def salvaImagem():
                     cv2.imwrite(salvaFotoCortada, imagem)
                 except:
                     continue
-
 #salvaImagem()
