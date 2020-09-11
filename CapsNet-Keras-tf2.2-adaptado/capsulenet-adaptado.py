@@ -23,12 +23,13 @@ from tensorflow.keras import backend as K
 from tensorflow.keras.utils import to_categorical
 import matplotlib.pyplot as plt
 from utils import combine_images
-from PIL import Image
-from preproc import *
+#from PIL import Image
+#import PIL
+from load_data import *
 from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
 
-CONJ_TREINO = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/CapsNet-Keras-tf2.2/CONJ_TREINO/*.jpg'
-CONJ_TESTE = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/CapsNet-Keras-tf2.2/CONJ_TESTE/*.jpg'
+CONJ_TREINO = '/home/samara/Documentos/tcc/CONJ_TREINO/*.jpg'
+CONJ_TESTE = '/home/samara/Documentos/tcc/CONJ_TESTE/*.jpg'
 
 K.set_image_data_format('channels_last')
 
@@ -264,7 +265,7 @@ if __name__ == "__main__":
         x_test, y_test = load_data(CONJ_TESTE)
 
     # define model
-    model, eval_model, manipulate_model = CapsNet(input_shape=(30,30,3),#x_train.shape[1:],
+    model, eval_model, manipulate_model = CapsNet(input_shape=(30,30,3),#x_train.shape,#np.shape(x_train),
                                                   n_class=5,
                                                   routings=args.routings,
                                                   batch_size=args.batch_size)
