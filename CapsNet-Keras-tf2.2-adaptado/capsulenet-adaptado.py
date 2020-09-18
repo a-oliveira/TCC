@@ -230,7 +230,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Capsule Network on {}.".format(dataset_name))
     parser.add_argument('--epochs', default=5, type=int)
-    parser.add_argument('--batch_size', default=100, type=int)
+    parser.add_argument('--batch_size', default=183, type=int)
     parser.add_argument('--lr', default=0.001, type=float,
                         help="Initial learning rate")
     parser.add_argument('--lr_decay', default=0.9, type=float,
@@ -264,9 +264,11 @@ if __name__ == "__main__":
         x_train, y_train = load_data(CONJ_TREINO)
         x_test, y_test = load_data(CONJ_TESTE)
 
+    print("x.shape = {} e y.shape = {}".format(x_train.shape, y_train.shape))
+
     # define model
     model, eval_model, manipulate_model = CapsNet(input_shape=x_train.shape[1:],#np.shape(x_train),
-                                                  n_class=5,
+                                                  n_class=len(np.unique(np.argmax(y_train, 1))),#5,
                                                   routings=args.routings,
                                                   batch_size=args.batch_size)
     model.summary()

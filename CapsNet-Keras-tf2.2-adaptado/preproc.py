@@ -6,9 +6,9 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 
-CSV_UFJF    = 'UFJF.csv'
-IMGS_UFJF   = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/ImagensUFJF/'
-CONJ_TREINO = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/CapsNet-Keras-tf2.2/CONJ_TREINO/*.jpg'
+CSV_UFJF    = 'UFJF2.csv'
+IMGS_UFJF   = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/ProjetoImagensUFJF/'
+CONJ_TREINO = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/CONJ_TREINO/*.jpg'
 
 def nome(diretorio):
 
