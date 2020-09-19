@@ -30,6 +30,7 @@ from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
 
 CONJ_TREINO = '/home/samara/Documentos/tcc/CONJ_TREINO/*.jpg'
 CONJ_TESTE = '/home/samara/Documentos/tcc/CONJ_TESTE/*.jpg'
+SISTEMA = 'linux'
 
 K.set_image_data_format('channels_last')
 
@@ -261,8 +262,8 @@ if __name__ == "__main__":
     elif dataset_name == 'CIFAR-10':
         (x_train, y_train), (x_test, y_test) = load_cifar()
     elif dataset_name == 'MYOSOTIS':
-        x_train, y_train = load_data(CONJ_TREINO)
-        x_test, y_test = load_data(CONJ_TESTE)
+        x_train, y_train = load_data(CONJ_TREINO, SISTEMA)
+        x_test, y_test = load_data(CONJ_TESTE, SISTEMA)
         #y_train = to_categorical(y_train)
         #y_test = to_categorical(y_test)
 

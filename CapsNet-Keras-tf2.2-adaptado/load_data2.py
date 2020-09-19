@@ -24,7 +24,7 @@ def busca_csv(id_img):
         pass
         #print("Imagem {} não encontrada.".format(+str(id_img)))
         
-def load_data(DIRETORIO):
+def load_data(DIRETORIO, SISTEMA):
 
     x       = [] # lista das imagens
     id_img  = 0
@@ -37,7 +37,7 @@ def load_data(DIRETORIO):
 
     for i in glob.glob(DIRETORIO):
         
-        id_img = int(nome(i)) # transforma id da imagem em inteiro antes de passar pra busca
+        id_img = int(nome(i, SISTEMA)) # transforma id da imagem em inteiro antes de passar pra busca
         
         try:
             img             = Image.open(i)
@@ -74,7 +74,7 @@ def load_data(DIRETORIO):
 
     return x, to_categorical(y)
 '''
-x, y = load_data('/home/samara/Documentos/tcc/CONJ_TREINO/*.jpg')
+x, y = load_data('/home/samara/Documentos/tcc/CONJ_TREINO/*.jpg', 'linux')
 print("Eu sou o shape do x: {} \nEu sou o shape do y: {}".format(x.shape,y.shape))
 
 print(to_categorical(y))
