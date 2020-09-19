@@ -28,8 +28,8 @@ from utils import combine_images
 from load_data2 import *
 from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
 
-CONJ_TREINO = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/CONJ_TREINO/*.jpg'
-CONJ_TESTE = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/CONJ_TESTE/*.jpg'
+CONJ_TREINO = '/home/samara/Documentos/tcc/CONJ_TREINO/*.jpg'
+CONJ_TESTE = '/home/samara/Documentos/tcc/CONJ_TESTE/*.jpg'
 
 K.set_image_data_format('channels_last')
 
@@ -230,7 +230,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Capsule Network on {}.".format(dataset_name))
     parser.add_argument('--epochs', default=5, type=int)
-    parser.add_argument('--batch_size', default=183, type=int)
+    parser.add_argument('--batch_size', default=100, type=int)
     parser.add_argument('--lr', default=0.001, type=float,
                         help="Initial learning rate")
     parser.add_argument('--lr_decay', default=0.9, type=float,
@@ -263,6 +263,8 @@ if __name__ == "__main__":
     elif dataset_name == 'MYOSOTIS':
         x_train, y_train = load_data(CONJ_TREINO)
         x_test, y_test = load_data(CONJ_TESTE)
+        #y_train = to_categorical(y_train)
+        #y_test = to_categorical(y_test)
 
     print("x.shape = {} e y.shape = {}".format(x_train.shape, y_train.shape))
 

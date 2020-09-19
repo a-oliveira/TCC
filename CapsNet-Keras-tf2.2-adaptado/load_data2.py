@@ -4,6 +4,7 @@ import numpy as np
 from preproc import *
 import PIL
 from PIL import Image
+from keras.utils import to_categorical
 #import cv2
 
 CSV_UFJF    = 'UFJF2.csv'
@@ -26,12 +27,13 @@ def busca_csv(id_img):
 def load_data(DIRETORIO):
 
     x       = [] # lista das imagens
-    j       = 0
     id_img  = 0
-    y       = [[0,0,0,0,0]] # lista de atributos das imagens (corCabelo, corOlhos...)
-    
-    for o in range(0,914):
-        y.append([0,0,0,0,0]) 
+    y       = [] # lista de atributos das imagens (corCabelo, corOlhos...)
+    cor_pele = ["parda", "branca", "preta", "amarela", "indigena"]
+    mapping = {}
+
+    for k in range(len(cor_pele)):
+    	mapping[cor_pele[k]] = k
 
     for i in glob.glob(DIRETORIO):
         
@@ -48,31 +50,36 @@ def load_data(DIRETORIO):
             corPele = busca_csv(id_img)
             
             if corPele == 2:
-                y[j][0] = 1#id_img
+                y.append(mapping['branca'])
                 
             elif corPele == 3:
-                y[j][1] = 1#id_img
+                y.append(mapping['preta'])
                 
             elif corPele == 4:
-                y[j][2] = 1#id_img
+                y.append(mapping['parda'])
                 
             elif corPele == 5:
-                y[j][3] = 1#id_img
+                y.append(mapping['amarela'])
                 
             elif corPele == 6:
-                y[j][4] = 1#id_img
-            j += 1
+                y.append(mapping['indigena'])
+            
         except:
             #print("Erro ao abrir a imagem {}.".format(nome(i)))
             pass #continue
     
     y = np.array(y)
     x = np.array(x)
+    #y = to_categorical(y.astype('float32'))
 
-    return x,y
-
-'''x, y = load_data('/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/CONJ_TREINO/*.jpg')
+    return x, to_categorical(y)
+'''
+x, y = load_data('/home/samara/Documentos/tcc/CONJ_TREINO/*.jpg')
 print("Eu sou o shape do x: {} \nEu sou o shape do y: {}".format(x.shape,y.shape))
+
+print(to_categorical(y))
+
+
 print(y[0][0])
 print(y[1])
 print(y[80])'''
