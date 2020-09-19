@@ -10,6 +10,7 @@ CSV_UFJF    = 'UFJF2.csv'
 IMGS_UFJF   = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/ProjetoImagensUFJF/'
 CONJ_TREINO = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/CONJ_TREINO/*.jpg'
 
+'''
 def nome(diretorio):
 
     nome = diretorio.split("\\") # pega apenas o 'id.jpg'
@@ -26,7 +27,7 @@ def nome(diretorio):
     nome = nome.split(".jpg")  # segundo split para pegar apenas o id
     
     return nome[0]
-'''
+
                
 def salvaImagem():
     imagem = None
