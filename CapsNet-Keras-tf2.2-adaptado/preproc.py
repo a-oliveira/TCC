@@ -1,14 +1,12 @@
 import csv
-#import cv2
 import glob, os
-#from faces import *
 import numpy as np
 import pandas as pd
 from PIL import Image
 
 CSV_UFJF    = 'UFJF2.csv'
-IMGS_UFJF   = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/ProjetoImagensUFJF/'
-CONJ_TREINO = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/CONJ_TREINO/*.jpg'
+IMGS_UFJF   = '/home/samara/Documentos/tcc/ImagensUFJF/'
+CONJ_TREINO = '/home/samara/Documentos/tcc/CONJ_TREINO/*.jpg'
 
 '''
 def nome(diretorio):
@@ -19,12 +17,20 @@ def nome(diretorio):
     return nome[0]
 
 '''
-def nome(diretorio):
+def nome(diretorio, sistema):
 
-    #nome = diretorio.split('imagensBD2/') # pega apenas o 'id.jpg'
-    nome = diretorio.rsplit('/', 1) # pega apenas o 'id.jpg'
-    nome = nome[1]
-    nome = nome.split(".jpg")  # segundo split para pegar apenas o id
+    if sistema == 'linux':
+    
+        #nome = diretorio.split('imagensBD2/') # pega apenas o 'id.jpg'
+        nome = diretorio.rsplit('/', 1) # pega apenas o 'id.jpg'
+        nome = nome[1]
+        nome = nome.split(".jpg")  # segundo split para pegar apenas o id
+    
+    elif sistema == 'windows':
+    
+        nome = diretorio.split("\\") # pega apenas o 'id.jpg'
+        nome = nome[1]
+        nome = nome.split(".jpg")  # segundo split para pegar apenas o id
     
     return nome[0]
 
