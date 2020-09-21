@@ -25,12 +25,10 @@ import matplotlib.pyplot as plt
 from utils import combine_images
 from PIL import Image
 from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
-from preprocImg import load_data
-import os
+import load_data as ld
 
 K.set_image_data_format('channels_last')
-CONJ_TREINO   = os.path.dirname(os.path.abspath(__file__)) + '/CONJ_TREINO/*.jpg'
-CONJ_TESTE    = os.path.dirname(os.path.abspath(__file__)) + '/CONJ_TESTE/*.jpg'
+
 
 def CapsNet(input_shape, n_class, routings, batch_size):
     """
@@ -119,12 +117,12 @@ def train(model,  # type: models.Model
                   loss_weights=[1., args.lam_recon],
                   metrics={'capsnet': 'accuracy'})
 
-    """
+    
     # Training without data augmentation:
     model.fit([x_train, y_train], [y_train, x_train], batch_size=args.batch_size, epochs=args.epochs,
-              validation_data=[[x_test, y_test], [y_test, x_test]], callbacks=[log, tb, checkpoint, lr_decay])
+              validation_data=[[x_test, y_test], [y_test, x_test]], callbacks=[log, checkpoint, lr_decay])
+    
     """
-
     # Begin: Training with data augmentation ---------------------------------------------------------------------#
     def train_generator(x, y, batch_size, shift_fraction=0.):
         train_datagen = ImageDataGenerator(width_shift_range=shift_fraction,
@@ -141,7 +139,7 @@ def train(model,  # type: models.Model
               validation_data=((x_test, y_test), (y_test, x_test)), batch_size=args.batch_size,
               callbacks=[log, checkpoint, lr_decay])
     # End: Training with data augmentation -----------------------------------------------------------------------#
-
+    """
     model.save_weights(args.save_dir + '/trained_model.h5')
     print('Trained model saved to \'%s/trained_model.h5\'' % args.save_dir)
 
@@ -152,11 +150,12 @@ def train(model,  # type: models.Model
 
 
 def test(model, data, args):
+    print('-' * 30 + 'Begin: test' + '-' * 30)
     x_test, y_test = data
     y_pred, x_recon = model.predict(x_test, batch_size=100)
-    print('-' * 30 + 'Begin: test' + '-' * 30)
     print('Test acc:', np.sum(np.argmax(y_pred, 1) == np.argmax(y_test, 1)) / y_test.shape[0])
-
+    print('Testing multiclass prediction for the first image:', np.argsort(-y_pred[0])[:3])
+    '''
     img = combine_images(np.concatenate([x_test[:50], x_recon[:50]]))
     image = img * 255
     Image.fromarray(image.astype(np.uint8)).save(args.save_dir + "/real_and_recon.png")
@@ -165,13 +164,13 @@ def test(model, data, args):
     print('-' * 30 + 'End: test' + '-' * 30)
     plt.imshow(plt.imread(args.save_dir + "/real_and_recon.png"))
     plt.show()
+    '''
 
 
 def manipulate_latent(model, data, args):
     print('-' * 30 + 'Begin: manipulate' + '-' * 30)
     x_test, y_test = data
     index = np.argmax(y_test, 1) == args.digit
-    print(index)
     number = np.random.randint(low=0, high=sum(index) - 1)
     x, y = x_test[index][number], y_test[index][number]
     x, y = np.expand_dims(x, 0), np.expand_dims(y, 0)
@@ -205,6 +204,17 @@ def load_mnist():
     return (x_train, y_train), (x_test, y_test)
 
 
+def load_cifar():
+    # the data, shuffled and split between train and test sets
+    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+
+    x_train = x_train.reshape(-1, 32, 32, 3).astype('float32') / 255.
+    x_test = x_test.reshape(-1, 32, 32, 3).astype('float32') / 255.
+    y_train = to_categorical(y_train.astype('float32'))
+    y_test = to_categorical(y_test.astype('float32'))
+    return (x_train, y_train), (x_test, y_test)
+
+
 if __name__ == "__main__":
     import os
     import argparse
@@ -212,9 +222,11 @@ if __name__ == "__main__":
     from tensorflow.keras import callbacks
 
     # setting the hyper parameters
-    parser = argparse.ArgumentParser(description="Capsule Network on MNIST.")
-    parser.add_argument('--epochs', default=50, type=int)
-    parser.add_argument('--batch_size', default=100, type=int)
+    dataset_name = 'desaparecidos'#'CIFAR-10', 'MNIST'
+
+    parser = argparse.ArgumentParser(description="Capsule Network on {}.".format(dataset_name))
+    parser.add_argument('--epochs', default=5, type=int)
+    parser.add_argument('--batch_size', default=30, type=int)
     parser.add_argument('--lr', default=0.001, type=float,
                         help="Initial learning rate")
     parser.add_argument('--lr_decay', default=0.9, type=float,
@@ -241,16 +253,29 @@ if __name__ == "__main__":
         os.makedirs(args.save_dir)
 
     # load data
-    # (x_train, y_train), (x_test, y_test) = load_mnist()
+    (x_train, y_train) = (None, None) 
+    (x_test, y_test) = (None, None)
 
-    x_train,y_train = load_data(CONJ_TREINO)
-    print(y_train)
-    x_test, y_test  = load_data(CONJ_TESTE)
+    train_path = os.path.join('data','ImagensUFJF')
+    train_labels_path = os.path.join(train_path,'UFJF.csv')
+
+    test_path = os.path.join('data','ImagensMyosotis')
+    test_labels_path = os.path.join(test_path,'MYOSOTIS.csv')
+    
+    if dataset_name == 'MNIST':
+        (x_train, y_train), (x_test, y_test) = load_mnist()
+    elif dataset_name == 'CIFAR-10':
+        (x_train, y_train), (x_test, y_test) = load_cifar()
+    elif dataset_name == 'desaparecidos':
+        x_train, y_train = ld.load_data(train_path, train_labels_path)
+        x_test, y_test = ld.load_data(test_path, test_labels_path)
+        x_test, y_test = x_test[:270], y_test[:270]
+
     # define model
-    model, eval_model, manipulate_model = CapsNet(input_shape=[28,28,1],
-                                                  n_class=10,#len(np.unique(np.argmax(y_train, 1))),
+    model, eval_model, manipulate_model = CapsNet(input_shape=x_train.shape[1:],
+                                                  n_class=len(np.unique(np.argmax(y_train, 1))),
                                                   routings=args.routings,
-                                                  batch_size=3)
+                                                  batch_size=args.batch_size)
     model.summary()
 
     # train or test
@@ -261,5 +286,5 @@ if __name__ == "__main__":
     else:  # as long as weights are given, will run testing
         if args.weights is None:
             print('No weights are provided. Will test using random initialized weights.')
-        # manipulate_latent(manipulate_model, (x_test, y_test), args)
+        manipulate_latent(manipulate_model, (x_test, y_test), args)
         test(model=eval_model, data=(x_test, y_test), args=args)
