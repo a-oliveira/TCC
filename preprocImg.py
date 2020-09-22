@@ -8,19 +8,20 @@ from resizeimage import resizeimage
 from keras.preprocessing.image import *
 import pandas as pd
 
+'''
 # '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/ImagensTreino/*.jpg'
 PATH          = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/rotulacao-bd.csv'
 PATH_BKP      = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/ImagensTreino'
 BASE_UFJF     = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/ImagensUFJF/*.jpg'
 CONJ_TREINO   = '/Users/Pandessa/Documents/MEGA/UFRRJ/TCC/Projeto/CONJ_TREINO/*.jpg'
 CONJ_TESTE    = '/Users/Pandessa/Documents/MEGA/UFRJ/TCC/Projeto/CONJ_TESTE/*.jpg'
-
 '''
+
 PATH          = '/home/samara/Downloads/rotulacao-bd.csv'
 PATH_BKP      = '/home/samara/Documentos/tcc/imagens_treino/'
 BASE_UFJF     = '/home/samara/Documentos/tcc/imagensBD2/*.jpg'
-CONJ_TREINO   = '/home/samara/Documentos/tcc/imagens_treino/*.jpg'
-'''
+CONJ_TREINO   = os.path.dirname(os.path.abspath(__file__)) + '/CONJ_TREINO/*.jpg'
+CONJ_TESTE    = os.path.dirname(os.path.abspath(__file__)) + '/CONJ_TESTE/*.jpg'
 
 LARGURA       = 80
 ALTURA        = 80
@@ -29,7 +30,7 @@ ALTURA        = 80
 #print(nome(i))
 #pyplot.imshow(pixels) - serve para printar a imagem em forma de gráfico
 '''
-
+'''
 def nome(diretorio):
 
     nome = diretorio.split("\\") # pega apenas o 'id.jpg'
@@ -41,12 +42,13 @@ def nome(diretorio):
 def nome(diretorio):
 
     #nome = diretorio.split('imagensBD2/') # pega apenas o 'id.jpg'
-    nome = diretorio.split('imagens_treino/') # pega apenas o 'id.jpg'
+    nome = diretorio.rsplit('/', 1) # pega apenas o 'id.jpg'
+    print(nome)
     nome = nome[1]
     nome = nome.split(".jpg")  # segundo split para pegar apenas o id
     
     return nome[0]
-'''
+
 def criarDiretorio(id_img, imagem):
     foto = PATH_BKP+"//"+str(id_img)+".jpg" #salvar no windows
     #foto = PATH_BKP+"/"+str(id_img)+".jpg" #salvar no ubuntu
