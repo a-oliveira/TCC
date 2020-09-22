@@ -23,9 +23,14 @@ from tensorflow.keras import backend as K
 from tensorflow.keras.utils import to_categorical
 import matplotlib.pyplot as plt
 from utils import combine_images
-from PIL import Image
+#from PIL import Image
+#import PIL
+from load_data2 import *
 from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
-import load_data as ld
+
+CONJ_TREINO = '/home/samara/Documentos/tcc/CONJ_TREINO/*.jpg'
+CONJ_TESTE = '/home/samara/Documentos/tcc/CONJ_TESTE/*.jpg'
+SISTEMA = 'linux'
 
 K.set_image_data_format('channels_last')
 
@@ -222,11 +227,11 @@ if __name__ == "__main__":
     from tensorflow.keras import callbacks
 
     # setting the hyper parameters
-    dataset_name = 'desaparecidos'#'CIFAR-10', 'MNIST'
+    dataset_name = 'MYOSOTIS' #'CIFAR-10' #'MNIST'
 
     parser = argparse.ArgumentParser(description="Capsule Network on {}.".format(dataset_name))
     parser.add_argument('--epochs', default=5, type=int)
-    parser.add_argument('--batch_size', default=30, type=int)
+    parser.add_argument('--batch_size', default=100, type=int)
     parser.add_argument('--lr', default=0.001, type=float,
                         help="Initial learning rate")
     parser.add_argument('--lr_decay', default=0.9, type=float,
@@ -251,29 +256,22 @@ if __name__ == "__main__":
 
     if not os.path.exists(args.save_dir):
         os.makedirs(args.save_dir)
-
-    # load data
-    (x_train, y_train) = (None, None) 
-    (x_test, y_test) = (None, None)
-
-    train_path = os.path.join('data','ImagensUFJF')
-    train_labels_path = os.path.join(train_path,'UFJF.csv')
-
-    test_path = os.path.join('data','ImagensMyosotis')
-    test_labels_path = os.path.join(test_path,'MYOSOTIS.csv')
     
     if dataset_name == 'MNIST':
         (x_train, y_train), (x_test, y_test) = load_mnist()
     elif dataset_name == 'CIFAR-10':
         (x_train, y_train), (x_test, y_test) = load_cifar()
-    elif dataset_name == 'desaparecidos':
-        x_train, y_train = ld.load_data(train_path, train_labels_path)
-        x_test, y_test = ld.load_data(test_path, test_labels_path)
-        x_test, y_test = x_test[:270], y_test[:270]
+    elif dataset_name == 'MYOSOTIS':
+        x_train, y_train = load_data(CONJ_TREINO, SISTEMA)
+        x_test, y_test = load_data(CONJ_TESTE, SISTEMA)
+        #y_train = to_categorical(y_train)
+        #y_test = to_categorical(y_test)
+
+    print("x.shape = {} e y.shape = {}".format(x_train.shape, y_train.shape))
 
     # define model
-    model, eval_model, manipulate_model = CapsNet(input_shape=x_train.shape[1:],
-                                                  n_class=len(np.unique(np.argmax(y_train, 1))),
+    model, eval_model, manipulate_model = CapsNet(input_shape=x_train.shape[1:],#np.shape(x_train),
+                                                  n_class=len(np.unique(np.argmax(y_train, 1))),#5,
                                                   routings=args.routings,
                                                   batch_size=args.batch_size)
     model.summary()
