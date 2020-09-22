@@ -2,5 +2,3 @@
 
 ### Added
 - Versão inicial
-
-- Rede pré-treinada
