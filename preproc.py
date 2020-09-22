@@ -1,4 +1,5 @@
 import csv
+#from face import cropFaces
 import glob, os
 import numpy as np
 import pandas as pd
@@ -11,7 +12,7 @@ CONJ_TREINO = '/home/samara/Documentos/tcc/CONJ_TREINO/*.jpg'
 def pega_id(img_name, sistema):
 
     if sistema == 'linux':
-        nome = diretorio.rsplit('/', 1)
+        nome = img_name.rsplit('/', 1)
     else:
         img_name = img_name.split("\\")[-1]
 
