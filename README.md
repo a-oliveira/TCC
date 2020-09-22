@@ -15,7 +15,7 @@ conda activate tf
 3. Em seguida, instale a versão 2.0 do tensorflow:
 
 ```
-pip install tensorflow==2.0
+pip install tensorflow==2.2.0
 ```
 
 4. Para testar, execute o comando:
