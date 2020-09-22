@@ -1,22 +1,22 @@
 import csv
-#from face import cropFaces
+from face import cropFaces
 import glob, os
 import numpy as np
 import pandas as pd
 from PIL import Image
 
-CSV_UFJF    = 'UFJF2.csv'
-IMGS_UFJF   = '/home/samara/Documentos/tcc/ImagensUFJF/'
-CONJ_TREINO = '/home/samara/Documentos/tcc/CONJ_TREINO/*.jpg'
+IMGS_UFJF = os.path.join('data', 'ImagensUFJF')
+CONJ_TREINO = os.path.join('data', 'CONJ_TREINO')
+CSV_UFJF = os.path.join(IMGS_UFJF, 'UFJF.csv')
 
 def pega_id(img_name, sistema):
 
     if sistema == 'linux':
         nome = img_name.rsplit('/', 1)
+        nome = nome[1].split(".jpg")
     else:
         img_name = img_name.split("\\")[-1]
-
-    nome = img_name.split(".jpg")  # segundo split para pegar apenas o id
+        nome = img_name.split(".jpg")  # segundo split para pegar apenas o id
     
     return nome[0]
 
