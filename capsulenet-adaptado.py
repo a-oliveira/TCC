@@ -157,11 +157,25 @@ def train(model,  # type: models.Model
 def test(model, data, args):
     print('-' * 30 + 'Begin: test' + '-' * 30)
     x_test, y_test = data
-    y_pred, x_recon = model.predict(x_test, batch_size=100)
-    print('Test acc:', np.sum(np.argmax(y_pred, 1)
-                              == np.argmax(y_test, 1)) / y_test.shape[0])
+    y_pred, x_recon = model.predict(x_test, batch_size=30)
+    print('Test acc:', np.sum(np.argmax(y_pred, 1) == np.argmax(y_test, 1)) / y_test.shape[0])
     print('Testing multiclass prediction for the first image:',
           np.argsort(-y_pred[0])[:3])
+
+    classesTest = np.argmax(y_test, 1)
+    classesPred = np.argmax(y_pred, 1)
+    target = []
+    predict = []
+
+    for i in classesTest:
+        target.append(ld.decoder(i))
+
+    for j in classesPred:
+        predict.append(ld.decoder(j))
+
+    print("Valor esperado: {}".format(target[:10]))
+    print("Valor obtido: {}".format(predict[:10]))
+
     '''
     img = combine_images(np.concatenate([x_test[:50], x_recon[:50]]))
     image = img * 255
@@ -278,13 +292,14 @@ if __name__ == "__main__":
         (x_train, y_train), (x_test, y_test) = load_cifar()
     elif dataset_name == 'desaparecidos':
         x_train, y_train = ld.load_data(
-            train_path, train_labels_path, 'linux')
-        x_test, y_test = ld.load_data(test_path, test_labels_path, 'linux')
+            train_path, train_labels_path, 'windows')
+        x_test, y_test = ld.load_data(test_path, test_labels_path, 'windows')
         x_test, y_test = x_test[:270], y_test[:270]
 
     # define model
     model, eval_model, manipulate_model = CapsNet(input_shape=x_train.shape[1:],
-                                                  n_class=len(np.unique(np.argmax(y_train, 1))),
+                                                  n_class=len(
+                                                      np.unique(np.argmax(y_train, 1))),
                                                   routings=args.routings,
                                                   batch_size=args.batch_size)
     model.summary()
@@ -297,5 +312,5 @@ if __name__ == "__main__":
     else:  # as long as weights are given, will run testing
         if args.weights is None:
             print('No weights are provided. Will test using random initialized weights.')
-        manipulate_latent(manipulate_model, (x_test, y_test), args)
+            manipulate_latent(manipulate_model, (x_test, y_test), args)
         test(model=eval_model, data=(x_test, y_test), args=args)
