@@ -1,10 +1,16 @@
+## [1.2.0] - 2020-09-24
+
+### Added
+
+- Iniciando função de decodificação
+
 ## [1.1.0] - 2020-09-21
 
-###Added
+### Added
 
 - Adicionando corte das faces para treinamento da reide
 
-###Changed
+### Changed
 - Atualizando caminho de repositório
 
 ## [1.0.0] - 2020-05-28
