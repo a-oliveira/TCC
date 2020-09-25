@@ -80,6 +80,49 @@ def load_data(diretorio, arquivo, sistema):
     return x, to_categorical(y, num_classes)
 
 
+def decoder(y):
+    if y == 0:
+        x = 'não tem marca ou tatuagem'
+    elif y == 1:
+        x = 'tem marca ou tatuagem'
+    elif y == 2:
+        x = 'branca'
+    elif y == 3:
+        x = 'preta'
+    elif y == 4:
+        x = 'parda'
+    elif y == 5:
+        x = 'amarela'
+    elif y == 6:
+        x = 'indígena'
+    elif y == 7:
+        x = 'preto'
+    elif y == 8:
+        x = 'branco'
+    elif y == 9:
+        x = 'loiro'
+    elif y == 10:
+        x = 'colorido'
+    elif y == 11:
+        x = 'azul'
+    elif y == 12:
+        x = 'castanho'
+    elif y == 13:
+        x = 'preto'
+    elif y == 14:
+        x = 'verde'
+    elif y == 15:
+        x = 'feminino'
+    elif y == 16:
+        x = 'masculino'
+    elif y == 17:
+        x = 'grisalho'
+    else:
+        return 'Não existe'
+
+    return x
+
+
 '''
 if __name__ == '__main__':
 
