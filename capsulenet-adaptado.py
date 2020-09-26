@@ -292,8 +292,8 @@ if __name__ == "__main__":
         (x_train, y_train), (x_test, y_test) = load_cifar()
     elif dataset_name == 'desaparecidos':
         x_train, y_train = ld.load_data(
-            train_path, train_labels_path, 'windows')
-        x_test, y_test = ld.load_data(test_path, test_labels_path, 'windows')
+            train_path, train_labels_path, 'linux')
+        x_test, y_test = ld.load_data(test_path, test_labels_path, 'linux')
         x_test, y_test = x_test[:270], y_test[:270]
 
     # define model
