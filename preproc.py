@@ -1,6 +1,6 @@
 import csv
-import glob
-import os
+from face import cropFaces
+import glob, os
 import numpy as np
 import pandas as pd
 from PIL import Image
@@ -15,11 +15,11 @@ def pega_id(img_name, sistema):
 
     if sistema == 'linux':
         nome = img_name.rsplit('/', 1)
+        nome = nome[1].split(".jpg")
     else:
         img_name = img_name.split("\\")[-1]
-
-    nome = img_name.split(".jpg")  # segundo split para pegar apenas o id
-
+        nome = img_name.split(".jpg")  # segundo split para pegar apenas o id
+    
     return nome[0]
 
 

@@ -1,13 +1,20 @@
-import os
-import glob
+import glob, os
 import pandas as pd
 import numpy as np
-from preproc import pega_id
 import PIL
 from PIL import Image
 from keras.utils import to_categorical
-#import cv2
 
+def pega_id(img_name, sistema):
+
+    if sistema == 'linux':
+        nome = img_name.rsplit('/', 1)
+        nome = nome[1].split(".jpg")
+    else:
+        img_name = img_name.split("\\")[-1]
+        nome = img_name.split(".jpg")  # segundo split para pegar apenas o id
+    
+    return nome[0]
 
 def busca_csv(id_img, arquivo):
 
@@ -23,7 +30,6 @@ def busca_csv(id_img, arquivo):
         pass
         #print("Imagem {} não encontrada.".format(+str(id_img)))
 
-
 def load_data(diretorio, arquivo, sistema):
     image_path = os.path.join(diretorio, '*.jpg')
     print("opening {} images".format(image_path))
@@ -34,6 +40,7 @@ def load_data(diretorio, arquivo, sistema):
     cor_pele = ["parda", "branca", "preta", "amarela", "indigena"]
     num_classes = len(cor_pele)
     mapping = {}
+    listaID = []
 
     for k in range(len(cor_pele)):
         mapping[cor_pele[k]] = k
@@ -53,6 +60,7 @@ def load_data(diretorio, arquivo, sistema):
 
                 if corPele > 1 and corPele < 7:
                     x.append(pixels)
+                    listaID.append(id_img)
 
                 if corPele == 2:
                     y.append(mapping['branca'])
@@ -79,52 +87,19 @@ def load_data(diretorio, arquivo, sistema):
 
     return x, to_categorical(y, num_classes)
 
-
 def decoder(y):
-    if y == 0:
-        x = 'não tem marca ou tatuagem'
-    elif y == 1:
-        x = 'tem marca ou tatuagem'
-    elif y == 2:
-        x = 'branca'
-    elif y == 3:
-        x = 'preta'
-    elif y == 4:
-        x = 'parda'
-    elif y == 5:
-        x = 'amarela'
-    elif y == 6:
-        x = 'indígena'
-    elif y == 7:
-        x = 'preto'
-    elif y == 8:
-        x = 'branco'
-    elif y == 9:
-        x = 'loiro'
-    elif y == 10:
-        x = 'colorido'
-    elif y == 11:
-        x = 'azul'
-    elif y == 12:
-        x = 'castanho'
-    elif y == 13:
-        x = 'preto'
-    elif y == 14:
-        x = 'verde'
-    elif y == 15:
-        x = 'feminino'
-    elif y == 16:
-        x = 'masculino'
-    elif y == 17:
-        x = 'grisalho'
-    else:
-        return 'Não existe'
+    cor_pele = ["parda", "branca", "preta", "amarela", "indigena"]
+    
+    x = cor_pele[y]
 
     return x
 
-
 '''
 if __name__ == '__main__':
+    print(busca_csv(1001, '/home/samara/Documentos/tcc/dev_teste/data/ImagensMyosotis/MYOSOTIS.csv'))
+
+    
+
 
     X, y = [], []
     arquivos = ['UFJF.csv', 'MYOSOTIS.csv']
