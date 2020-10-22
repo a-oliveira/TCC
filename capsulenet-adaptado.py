@@ -26,6 +26,7 @@ from utils import combine_images
 from PIL import Image
 from capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
 import load_data as ld
+import base_dados as bd
 
 K.set_image_data_format('channels_last')
 
@@ -112,7 +113,7 @@ def train(model,  # type: models.Model
 
     # callbacks
     log = callbacks.CSVLogger(args.save_dir + '/log.csv')
-    checkpoint = callbacks.ModelCheckpoint(args.save_dir + '/weights-{epoch:02d}.h5', monitor='val_capsnet_acc',
+    checkpoint = callbacks.ModelCheckpoint(args.save_dir + '/weights-{epoch:02d}.h5', monitor='val_capsnet_accuracy',
                                            save_best_only=True, save_weights_only=True, verbose=1)
     lr_decay = callbacks.LearningRateScheduler(
         schedule=lambda epoch: args.lr * (args.lr_decay ** epoch))
@@ -157,8 +158,9 @@ def train(model,  # type: models.Model
 def test(model, data, args):
     print('-' * 30 + 'Begin: test' + '-' * 30)
     x_test, y_test = data
-    y_pred, x_recon = model.predict(x_test, batch_size=30)
-    print('Test acc:', np.sum(np.argmax(y_pred, 1) == np.argmax(y_test, 1)) / y_test.shape[0])
+    y_pred, x_recon = model.predict(x_test, batch_size=40)
+    print('Test acc:', np.sum(np.argmax(y_pred, 1)
+                              == np.argmax(y_test, 1)) / y_test.shape[0])
     print('Testing multiclass prediction for the first image:',
           np.argsort(-y_pred[0])[:3])
 
@@ -173,8 +175,14 @@ def test(model, data, args):
     for j in classesPred:
         predict.append(ld.decoder(j))
 
-    print("Valor esperado: {}".format(target[:10]))
-    print("Valor obtido: {}".format(predict[:10]))
+    print("Valor esperado: {}".format(target[:15]))
+    print("Valor obtido: {}".format(predict[:15]))
+    print("Teste fazendo busca na base de dados:\n")
+    json = {}
+    json[' cor_da_pele'] = predict[0]
+    testeBD = bd.BaseDados(json)
+    testeBD.buscar()
+    testeBD.imprimir()
 
     '''
     img = combine_images(np.concatenate([x_test[:50], x_recon[:50]]))
@@ -188,7 +196,7 @@ def test(model, data, args):
     '''
 
 
-def manipulate_latent(model, data, args):
+'''def manipulate_latent(model, data, args):
     print('-' * 30 + 'Begin: manipulate' + '-' * 30)
     x_test, y_test = data
     index = np.argmax(y_test, 1) == args.digit
@@ -212,7 +220,7 @@ def manipulate_latent(model, data, args):
         args.save_dir + '/manipulate-%d.png' % args.digit)
     print('manipulated result saved to %s/manipulate-%d.png' %
           (args.save_dir, args.digit))
-    print('-' * 30 + 'End: manipulate' + '-' * 30)
+    print('-' * 30 + 'End: manipulate' + '-' * 30)'''
 
 
 def load_mnist():
@@ -249,20 +257,20 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description="Capsule Network on {}.".format(dataset_name))
-    parser.add_argument('--epochs', default=5, type=int)
-    parser.add_argument('--batch_size', default=30, type=int)
-    parser.add_argument('--lr', default=0.001, type=float,
+    parser.add_argument('--epochs', default=50, type=int)
+    parser.add_argument('--batch_size', default=40, type=int)
+    parser.add_argument('--lr', default=0.0001, type=float,
                         help="Initial learning rate")
     parser.add_argument('--lr_decay', default=0.9, type=float,
                         help="The value multiplied by lr at each epoch. Set a larger value for larger epochs")
     parser.add_argument('--lam_recon', default=0.392, type=float,
                         help="The coefficient for the loss of decoder")
-    parser.add_argument('-r', '--routings', default=3, type=int,
+    parser.add_argument('-r', '--routings', default=5, type=int,
                         help="Number of iterations used in routing algorithm. should > 0")
     parser.add_argument('--shift_fraction', default=0.1, type=float,
                         help="Fraction of pixels to shift at most in each direction.")
     parser.add_argument('--debug', action='store_true',
-                        help="Save weights by TensorBoard")
+                        help="Save weightsclear by TensorBoard")
     parser.add_argument('--save_dir', default='./result')
     parser.add_argument('-t', '--testing', action='store_true',
                         help="Test the trained model on testing dataset")
@@ -280,8 +288,11 @@ if __name__ == "__main__":
     (x_train, y_train) = (None, None)
     (x_test, y_test) = (None, None)
 
-    train_path = os.path.join('data', 'ImagensUFJF')
+    train_path = os.path.join('data', 'CONJ_TREINO')
     train_labels_path = os.path.join(train_path, 'UFJF.csv')
+
+    '''test_path = os.path.join('data', 'CONJ_TREINO2')
+                test_labels_path = os.path.join(train_path, 'UFJF.csv')'''
 
     test_path = os.path.join('data', 'ImagensMyosotis')
     test_labels_path = os.path.join(test_path, 'MYOSOTIS.csv')
@@ -292,9 +303,11 @@ if __name__ == "__main__":
         (x_train, y_train), (x_test, y_test) = load_cifar()
     elif dataset_name == 'desaparecidos':
         x_train, y_train = ld.load_data(
-            train_path, train_labels_path, 'linux')
-        x_test, y_test = ld.load_data(test_path, test_labels_path, 'linux')
-        x_test, y_test = x_test[:270], y_test[:270]
+            train_path, train_labels_path, 'windows')
+        x_test, y_test = ld.load_data(test_path, test_labels_path, 'windows')
+        x_test, y_test = x_test[:280], y_test[:280]
+        print('size_x: ', x_train.shape)
+        print('size_y: ', y_train.shape)
 
     # define model
     model, eval_model, manipulate_model = CapsNet(input_shape=x_train.shape[1:],
@@ -312,5 +325,5 @@ if __name__ == "__main__":
     else:  # as long as weights are given, will run testing
         if args.weights is None:
             print('No weights are provided. Will test using random initialized weights.')
-            manipulate_latent(manipulate_model, (x_test, y_test), args)
+            #manipulate_latent(manipulate_model, (x_test, y_test), args)
         test(model=eval_model, data=(x_test, y_test), args=args)
