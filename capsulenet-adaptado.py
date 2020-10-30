@@ -178,9 +178,10 @@ def test(model, data, args):
     print("Valor esperado: {}".format(target[:15]))
     print("Valor obtido: {}".format(predict[:15]))
     print("Teste fazendo busca na base de dados:\n")
-    json = {}
+    '''json = {}
     json[' cor_da_pele'] = predict[0]
-    testeBD = bd.BaseDados(json)
+    testeBD = bd.BaseDados(json)'''
+    testeBD = bd.BaseDados("PG", predict[0])
     testeBD.buscar()
     testeBD.imprimir()
 
